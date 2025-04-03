@@ -3,4 +3,12 @@ name = "vp"
 version = "0.1.0"
 edition = "2024"
 
+[[bin]]
+name = "ba"
+path = "src/bin/ba.rs"
+
 [dependencies]
+
+[[example]]
+name = "ea"
+path = "examples/ea.rs"
