@@ -30,27 +30,20 @@ fn split_chapters(path: &str) -> SResult {
         let mut current_ch = "".to_string();
         let mut ch_lines: Vec<String> = Vec::new();
 
-        // let mut save_chapter = || {
-        //     let bnn = base_name.to_owned();
-        //     let np = base_dir.join(bnn + "_" + current_ch + ".txt");
-        //     println!("{:?}", np);
-        //     let mut f = File::create(np).unwrap();
-        //     let content = ch_lines.join("\r\n");
-        //     let _ = f.write_all(&content.as_bytes());
-        //     ch_lines.clear();
-        // };
+        let save_chapter = |content: &String, current_ch: &str| {
+            let bnn = base_name.to_owned();
+            let np = base_dir.join(bnn + "_" + current_ch + ".txt");
+            println!("{:?}", np);
+            let mut f = File::create(np).unwrap();
+            let _ = f.write_all(content.as_bytes());
+        };
 
         for line in lines.map_while(Result::ok) {
             if line.starts_with("Chapter ") {
                 let chapter = line.trim_start_matches("Chapter ").trim();
                 if chapter != current_ch {
                     if current_ch != "" && !ch_lines.is_empty() {
-                        let bnn = base_name.to_owned();
-                        let np = base_dir.join(bnn + "_" + &current_ch + ".txt");
-                        println!("{:?}", np);
-                        let mut f = File::create(np).unwrap();
-                        let content = ch_lines.join("\r\n");
-                        let _ = f.write_all(&content.as_bytes());
+                        save_chapter(&ch_lines.join("\r\n"), &current_ch);
                         ch_lines.clear();
                     }
                     current_ch = chapter.to_string();
@@ -60,12 +53,7 @@ fn split_chapters(path: &str) -> SResult {
             // println!("{}", line);
         }
         if !ch_lines.is_empty() {
-            let bnn = base_name.to_owned();
-            let np = base_dir.join(bnn + "_" + &current_ch + ".txt");
-            println!("{:?}", np);
-            let mut f = File::create(np).unwrap();
-            let content = ch_lines.join("\r\n");
-            let _ = f.write_all(&content.as_bytes());
+            save_chapter(&ch_lines.join("\r\n"), &current_ch);
             ch_lines.clear();
         }
     }
@@ -86,7 +74,7 @@ fn test_fbn() -> SResult {
 
 #[test]
 fn test_split_chapters() -> SResult {
-    split_chapters(r"C:\ws\node\voc\wt\chamber\chamber_6-10.txt")
+    split_chapters(r"C:\ws\node\voc\wt\chamber\chamber_11-15.txt")
 }
 
 fn pdir(d: &Path) {
