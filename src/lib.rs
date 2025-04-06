@@ -1,3 +1,5 @@
+mod word_form;
+
 use std::fs::{self, File};
 use std::io;
 use std::io::BufRead;
