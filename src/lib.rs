@@ -39,8 +39,8 @@ fn split_chapters(path: &str) -> SResult {
         };
 
         for line in lines.map_while(Result::ok) {
-            if line.starts_with("Chapter ") {
-                let chapter = line.trim_start_matches("Chapter ").trim();
+            if line.starts_with("CHAPTER ") {
+                let chapter = line.trim_start_matches("CHAPTER ").trim();
                 if chapter != current_ch {
                     if current_ch != "" && !ch_lines.is_empty() {
                         save_chapter(&ch_lines.join("\r\n"), &current_ch);
@@ -75,6 +75,27 @@ fn test_fbn() -> SResult {
 #[test]
 fn test_split_chapters() -> SResult {
     split_chapters(r"C:\ws\node\voc\wt\chamber\chamber_11-15.txt")
+}
+
+#[test]
+fn test_split_dir_chapters() -> SResult {
+    let dir = r"C:\ws\node\voc\wt\stone";
+    let d = Path::new(dir);
+    println!("dir {:?}", d.file_name());
+    for fe in fs::read_dir(d)?.into_iter() {
+        let f = fe?;
+        if !f.metadata()?.is_file() {
+            continue;
+        }
+        let path = &f.path();
+        let pss = path.to_str().unwrap();
+        let hb = pss.find("-");
+        if let Some(_) = hb {
+            println!("{}", pss);
+            let _ = split_chapters(pss);
+        }
+    }
+    Ok(())
 }
 
 fn pdir(d: &Path) {
